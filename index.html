@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Substitution</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Teacher Substitution</h1>
+        
+        <div class="form-group">
+            <label for="weekday">Select Weekday:</label>
+            <select id="weekday">
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+            </select>
+        </div>
+
+        <div id="teacherList" class="form-group">
+            <!-- Teacher checkboxes will be generated here -->
+        </div>
+
+        <button onclick="findSubstitute()">Find Substitute</button>
+
+        <div id="result"></div>
+
+        <!-- Button to manage teachers -->
+        <button onclick="window.location.href = 'manage-teachers.html';">Manage Teachers</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.4.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.4.0/firebase-database.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
