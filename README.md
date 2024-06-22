@@ -14,6 +14,12 @@ This project is a simple web application for managing teachers' schedules. It al
 - HTML
 - CSS
 - JavaScript
+
+## Time Table Method Eg.
+- Minimum of 8 teachers Needed For Accurate Substituition As There is Eight Period In A Day
+- 9B,10C,FREE,8C,9E,8A,FREE,FREE
+- FREE,8C,10D,9C,FREE,8A,FREE,8C
+
 ## Storage Information
 
 Time Table Manager employs browser local storage to store each teacher's timetable efficiently. When teachers are added or their schedules are modified, the application updates JSON-formatted data in local storage. This allows for persistent storage of teachers' schedules across sessions, ensuring accessibility and manageability directly within the browser without requiring server-side storage or complex databases.
