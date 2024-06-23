@@ -14,6 +14,8 @@ This project is a simple web application for managing teachers' schedules. It al
 - HTML
 - CSS
 - JavaScript
+- Flask
+- Flask Caching
 
 ## Time Table Method Eg.
 - Minimum of 8 teachers Needed For Accurate Substituition As There is Eight Period In A Day
