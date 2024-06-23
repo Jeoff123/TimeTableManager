@@ -14,6 +14,8 @@ This project is a simple web application for managing teachers' schedules. It al
 - HTML
 - CSS
 - JavaScript
+- Flask
+- Flask Caching
 
 ## Time Table Method Eg.
 - Minimum of 8 teachers Needed For Accurate Substituition As There is Eight Period In A Day
@@ -22,7 +24,7 @@ This project is a simple web application for managing teachers' schedules. It al
 
 ## Storage Information
 
-Time Table Manager employs browser local storage to store each teacher's timetable efficiently. When teachers are added or their schedules are modified, the application updates JSON-formatted data in local storage. This allows for persistent storage of teachers' schedules across sessions, ensuring accessibility and manageability directly within the browser without requiring server-side storage or complex databases.
+Time Table Manager employs browser local storage to store each teacher's timetable efficiently. When teachers are added or their schedules are modified, the application updates JSON-formatted data in local storage. This allows for persistent storage of teachers' schedules across sessions, ensuring accessibility and manageability directly within the browser without requiring server-side storage or complex databases.**Data Does Not Persist Cross Device**
 ## License
 
 This project is licensed under the Creative Commons Legal Code CC0 1.0 Universal. For more information, see the [LICENSE](LICENSE) file.

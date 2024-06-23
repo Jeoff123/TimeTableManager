@@ -1,4 +1,3 @@
-/* Reset default styles */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -13,6 +12,7 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
+    overflow: hidden;
 }
 
 .container {
@@ -21,8 +21,8 @@ body {
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: center;
-    max-width: 800px; /* Adjust the max-width as needed */
-    margin: auto; /* Center container horizontally */
+    max-width: 800px;
+    margin: auto;
 }
 
 h1 {
@@ -37,9 +37,9 @@ h1 {
 #teacherList {
     margin: 10px 0;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Responsive grid with minimum 150px width */
-    gap: 10px; /* Adjust the gap between checkboxes */
-    justify-items: center; /* Center align items */
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    justify-items: center;
 }
 
 .checkbox-label {
@@ -67,8 +67,6 @@ button:hover {
     margin-top: 20px;
     text-align: left;
 }
-
-/* Styles for manage-teachers.html */
 
 .teachers-container {
     max-width: 800px;

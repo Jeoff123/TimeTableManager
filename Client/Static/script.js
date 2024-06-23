@@ -1,9 +1,7 @@
-// Function to save teachers to localStorage
 function saveTeachersToLocalStorage(teachers) {
     localStorage.setItem('teachers', JSON.stringify(teachers));
 }
 
-// Function to load teachers into the manage-teachers.html page
 function loadTeachers() {
     const teachersListDiv = document.getElementById('teachersList');
     teachersListDiv.innerHTML = '';
@@ -26,7 +24,6 @@ function loadTeachers() {
     }
 }
 
-// Function to add or edit a teacher
 function saveTeacher(event) {
     event.preventDefault();
 
@@ -57,7 +54,6 @@ function saveTeacher(event) {
     document.getElementById('teacherForm').reset();
 }
 
-// Function to edit a teacher's schedule
 function editTeacher(teacherName) {
     let teachers = getTeachersFromLocalStorage();
     const teacher = teachers[teacherName];
@@ -69,12 +65,10 @@ function editTeacher(teacherName) {
     document.getElementById('thursdaySchedule').value = teacher.Thursday;
     document.getElementById('fridaySchedule').value = teacher.Friday;
 
-    // Remove the current teacher from localStorage
     delete teachers[teacherName];
     saveTeachersToLocalStorage(teachers);
 }
 
-// Function to delete a teacher
 function deleteTeacher(teacherName) {
     if (confirm(`Are you sure you want to delete ${teacherName}?`)) {
         let teachers = getTeachersFromLocalStorage();
@@ -84,20 +78,19 @@ function deleteTeacher(teacherName) {
     }
 }
 
-// Function to get teachers from localStorage or initialize if not present
 function getTeachersFromLocalStorage() {
     let teachers = JSON.parse(localStorage.getItem('teachers'));
-    if (!teachers) {
+    if (!teachers) {// Initial load of teachers on window load
+
         teachers = {};
         localStorage.setItem('teachers', JSON.stringify(teachers));
     }
     return teachers;
 }
 
-// Function to generate checkboxes for teachers in index.html
 function generateTeacherCheckboxes() {
     const teacherListDiv = document.getElementById('teacherList');
-    teacherListDiv.innerHTML = ''; // Clear previous checkboxes
+    teacherListDiv.innerHTML = '';
 
     const teachersData = getTeachersFromLocalStorage();
     for (let teacher in teachersData) {
@@ -107,7 +100,7 @@ function generateTeacherCheckboxes() {
         let checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.value = teacher;
-        checkbox.id = teacher; // Use teacher name as ID for uniqueness
+        checkbox.id = teacher;
         label.appendChild(checkbox);
 
         let labelText = document.createTextNode(teacher);
@@ -117,7 +110,6 @@ function generateTeacherCheckboxes() {
     }
 }
 
-// Function to find substitute based on selected teachers and weekday
 function findSubstitute() {
     const selectedCheckboxes = document.querySelectorAll('#teacherList input[type="checkbox"]:checked');
     if (selectedCheckboxes.length === 0) {
@@ -167,7 +159,6 @@ function findSubstitute() {
     displayResult(selectedTeachers, selectedWeekday);
 }
 
-// Function to display substitution result
 function displayResult(selectedTeachers, selectedWeekday) {
     const resultDiv = document.getElementById('result');
     resultDiv.innerHTML = `<h3>${selectedWeekday}</h3>`;
@@ -182,7 +173,6 @@ function displayResult(selectedTeachers, selectedWeekday) {
     }
 }
 
-// Initial load of teachers on window load
 window.onload = function() {
     generateTeacherCheckboxes();
 };

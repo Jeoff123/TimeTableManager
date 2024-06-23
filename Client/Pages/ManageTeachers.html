@@ -4,15 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Teachers</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="icon" type="images/x-icon" href="/static/Favicon.png">
 </head>
 <body>
     <div class="container">
         <h1>Manage Teachers</h1>
 
-        <div id="teachersList">
-            <!-- Teachers and their periods will be displayed here -->
-        </div>
+        <div id="teachersList"></div>
 
         <h2>Add/Edit Teacher</h2>
         <form id="teacherForm">
@@ -41,16 +40,19 @@
                 <input type="text" id="fridaySchedule" required>
             </div>
             <button type="submit">Save Teacher</button>
-            <button onclick="window.location.href = 'index.html';">Go To Home</button>
+            <button id="back">Go To Home</button>
         </form>
     </div>
 
-    <script src="script.js"></script>
+    <script src="/static/script.js"></script>
     <script>
         window.onload = function() {
             loadTeachers();
             document.getElementById('teacherForm').addEventListener('submit', saveTeacher);
         };
+        document.getElementById('back').addEventListener('click', function() {
+            window.location.href = '/';
+        });
     </script>
 </body>
 </html>

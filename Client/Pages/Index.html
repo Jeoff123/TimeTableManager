@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher Substitution</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="icon" type="images/x-icon" href="/static/Favicon.png">
 </head>
 <body>
     <div class="container">
@@ -21,20 +22,20 @@
             </select>
         </div>
 
-        <div id="teacherList" class="form-group">
-            <!-- Teacher checkboxes will be generated here -->
-        </div>
+        <div id="teacherList" class="form-group"></div>
 
         <button onclick="findSubstitute()">Find Substitute</button>
 
         <div id="result"></div>
 
-        <!-- Button to manage teachers -->
-        <button onclick="window.location.href = 'manage-teachers.html';">Manage Teachers</button>
+        <button id="manageTeachers">Manage Teachers</button>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.4.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.4.0/firebase-database.js"></script>
-    <script src="script.js"></script>
+    <script src="/static/script.js" defer async></script>
+    <script>
+        document.getElementById("manageTeachers").addEventListener("click", function() {
+            window.location.href = "/teachers";
+        });
+    </script>
 </body>
 </html>
