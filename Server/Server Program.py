@@ -3,6 +3,7 @@ from flask import (
     render_template as Serve
 )
 from flask_caching import Cache
+from flask_compress import Compress
 
 application: Flask = Flask(__name__)
 application.template_folder = "../Client/Pages/"
@@ -11,6 +12,7 @@ cache: Cache = Cache(application, config={
     "CACHE_TYPE": "simple",
     "CACHE_DEFAULT_TIMEOUT": 300
 })
+Compress(application)
 
 @application.route("/", methods = ['GET'])
 @cache.cached(timeout=None)
