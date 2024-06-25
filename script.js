@@ -182,7 +182,7 @@ function displayResult(selectedTeachers, selectedWeekday) {
     }
 }
 
-// Function to convert result to PDF and share via WhatsApp or download
+// Function to convert result to PDF and share via WhatsApp
 function convertToPdf() {
     const resultDiv = document.getElementById('result');
     const resultText = resultDiv.innerText;
@@ -207,7 +207,7 @@ function convertToPdf() {
         // Generate a Blob object representing the PDF document
         const pdfBlob = doc.output('blob');
 
-        // Check if navigator.share is available (supports Web Share API)
+        // Share PDF via WhatsApp if supported
         if (navigator.share) {
             // Create a File object from Blob
             const file = new File([pdfBlob], 'substitution_result.pdf', {
@@ -221,40 +221,18 @@ function convertToPdf() {
             }).then(() => {
                 console.log('PDF shared successfully to WhatsApp');
             }).catch((error) => {
-                console.error('Error sharing PDF via WhatsApp:', error);
-                // If sharing fails, fall back to downloading the PDF
-                downloadPdf(pdfBlob);
+                console.error('Error sharing PDF:', error);
+                alert('Error sharing PDF. Please try again later.');
             });
         } else {
-            // Fallback: If Web Share API is not supported, download the PDF
-            downloadPdf(pdfBlob);
+            // Fallback for browsers that do not support Web Share API
+            alert('Your browser does not support sharing files directly to WhatsApp.');
         }
     } catch (error) {
         console.error('Error generating PDF:', error);
         alert('Error generating PDF. Please try again later.');
     }
 }
-
-// Function to download PDF
-function downloadPdf(pdfBlob) {
-    // Create a URL for the Blob object
-    const blobUrl = URL.createObjectURL(pdfBlob);
-
-    // Create a temporary <a> element to trigger the download
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = blobUrl;
-    a.download = 'substitution_result.pdf';
-
-    // Append the <a> element to the DOM and simulate click
-    document.body.appendChild(a);
-    a.click();
-
-    // Clean up: remove the <a> element and revoke the URL object
-    document.body.removeChild(a);
-    URL.revokeObjectURL(blobUrl);
-}
-
 
 
 
