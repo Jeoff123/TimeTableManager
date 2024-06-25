@@ -182,17 +182,7 @@ function displayResult(selectedTeachers, selectedWeekday) {
     }
 }
 
-// Function to share result as text via WhatsApp
-function shareAsText() {
-    const resultDiv = document.getElementById('result');
-    let resultText = resultDiv.innerText;
-    resultText = resultText.split('\n').map(line => line.trim()).join('\n\n'); // Add empty lines
-
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(resultText)}`;
-    window.open(whatsappUrl, '_blank');
-}
-
-// Function to convert result to PDF and share
+// Function to convert result to PDF and download
 function convertToPdf() {
     const resultDiv = document.getElementById('result');
     const resultText = resultDiv.innerText;
@@ -200,7 +190,26 @@ function convertToPdf() {
     const doc = new jsPDF();
 
     doc.text(resultText, 10, 10);
-    doc.save('substitution_result.pdf');
+
+    // Generate a Blob object representing the PDF document
+    const pdfBlob = doc.output('blob');
+
+    // Create a URL for the Blob object
+    const blobUrl = URL.createObjectURL(pdfBlob);
+
+    // Create a temporary <a> element to trigger the download
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = blobUrl;
+    a.download = 'substitution_result.pdf';
+
+    // Append the <a> element to the DOM and simulate click
+    document.body.appendChild(a);
+    a.click();
+
+    // Clean up: remove the <a> element and revoke the URL object
+    document.body.removeChild(a);
+    URL.revokeObjectURL(blobUrl);
 }
 
 // Initial load of teachers on window load
