@@ -189,27 +189,32 @@ function convertToPdf() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-    doc.text(resultText, 10, 10);
+    try {
+        doc.text(resultText, 10, 10);
 
-    // Generate a Blob object representing the PDF document
-    const pdfBlob = doc.output('blob');
+        // Generate a Blob object representing the PDF document
+        const pdfBlob = doc.output('blob');
 
-    // Create a URL for the Blob object
-    const blobUrl = URL.createObjectURL(pdfBlob);
+        // Create a URL for the Blob object
+        const blobUrl = URL.createObjectURL(pdfBlob);
 
-    // Create a temporary <a> element to trigger the download
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = blobUrl;
-    a.download = 'substitution_result.pdf';
+        // Create a temporary <a> element to trigger the download
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = blobUrl;
+        a.download = 'substitution_result.pdf';
 
-    // Append the <a> element to the DOM and simulate click
-    document.body.appendChild(a);
-    a.click();
+        // Append the <a> element to the DOM and simulate click
+        document.body.appendChild(a);
+        a.click();
 
-    // Clean up: remove the <a> element and revoke the URL object
-    document.body.removeChild(a);
-    URL.revokeObjectURL(blobUrl);
+        // Clean up: remove the <a> element and revoke the URL object
+        document.body.removeChild(a);
+        URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        alert('Error generating PDF. Please try again later.');
+    }
 }
 
 // Initial load of teachers on window load
