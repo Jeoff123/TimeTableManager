@@ -182,7 +182,7 @@ function displayResult(selectedTeachers, selectedWeekday) {
     }
 }
 
-// Function to convert result to PDF and download
+// Function to convert result to PDF and share via WhatsApp
 function convertToPdf() {
     const resultDiv = document.getElementById('result');
     const resultText = resultDiv.innerText;
@@ -190,32 +190,51 @@ function convertToPdf() {
     const doc = new jsPDF();
 
     try {
-        doc.text(resultText, 10, 10);
+        // Set line height (line spacing) to 10 points (adjust as needed)
+        const lineHeight = 10;
+
+        // Split result text into lines
+        const lines = doc.splitTextToSize(resultText, doc.internal.pageSize.width - 20);
+
+        // Add lines to PDF with specified line height
+        lines.forEach((line, index) => {
+            // Calculate y position for each line
+            const y = 20 + (index * lineHeight);
+            // Add text to PDF at x=10, y position
+            doc.text(line, 10, y);
+        });
 
         // Generate a Blob object representing the PDF document
         const pdfBlob = doc.output('blob');
 
-        // Create a URL for the Blob object
-        const blobUrl = URL.createObjectURL(pdfBlob);
+        // Share PDF via WhatsApp if supported
+        if (navigator.share) {
+            // Create a File object from Blob
+            const file = new File([pdfBlob], 'substitution_result.pdf', {
+                type: 'application/pdf',
+            });
 
-        // Create a temporary <a> element to trigger the download
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = blobUrl;
-        a.download = 'substitution_result.pdf';
-
-        // Append the <a> element to the DOM and simulate click
-        document.body.appendChild(a);
-        a.click();
-
-        // Clean up: remove the <a> element and revoke the URL object
-        document.body.removeChild(a);
-        URL.revokeObjectURL(blobUrl);
+            // Use the Web Share API to share the PDF file to WhatsApp
+            navigator.share({
+                files: [file],
+                title: 'Substitution Result PDF'
+            }).then(() => {
+                console.log('PDF shared successfully to WhatsApp');
+            }).catch((error) => {
+                console.error('Error sharing PDF:', error);
+                alert('Error sharing PDF. Please try again later.');
+            });
+        } else {
+            // Fallback for browsers that do not support Web Share API
+            alert('Your browser does not support sharing files directly to WhatsApp.');
+        }
     } catch (error) {
         console.error('Error generating PDF:', error);
         alert('Error generating PDF. Please try again later.');
     }
 }
+
+
 
 // Initial load of teachers on window load
 window.onload = function() {
