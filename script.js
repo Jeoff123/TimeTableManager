@@ -191,7 +191,7 @@ function convertToPdf() {
 
     try {
         // Set line height (line spacing) to 10 points (adjust as needed)
-        const lineHeight = 10;
+        const lineHeight = 5;
 
         // Split result text into lines
         const lines = doc.splitTextToSize(resultText, doc.internal.pageSize.width - 20);
@@ -223,16 +223,48 @@ function convertToPdf() {
             }).catch((error) => {
                 console.error('Error sharing PDF:', error);
                 alert('Error sharing PDF. Please try again later.');
+
+                // If sharing fails, attempt to download the PDF
+                downloadPdf(pdfBlob);
             });
         } else {
             // Fallback for browsers that do not support Web Share API
-            alert('Your browser does not support sharing files directly to WhatsApp.');
+            alert('PDF is in The Downloads Folder');
+
+            // Attempt to download the PDF
+            downloadPdf(pdfBlob);
         }
     } catch (error) {
         console.error('Error generating PDF:', error);
         alert('Error generating PDF. Please try again later.');
+
+        // If PDF generation fails, attempt to download the PDF
+        downloadPdf(pdfBlob);
     }
 }
+
+// Function to download the generated PDF
+function downloadPdf(pdfBlob) {
+    // Create a temporary anchor element
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    document.body.appendChild(a);
+
+    // Set the HREF to a Blob URL representing the PDF
+    const url = window.URL.createObjectURL(pdfBlob);
+    a.href = url;
+
+    // Set the download attribute with a default filename
+    a.download = 'substitution_result.pdf';
+
+    // Programmatically click the anchor element to trigger download
+    a.click();
+
+    // Clean up: remove the anchor element and revoke the Blob URL
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+}
+
 
 
 
