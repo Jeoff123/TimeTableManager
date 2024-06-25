@@ -188,32 +188,22 @@ function shareAsText() {
     let resultText = resultDiv.innerText;
     resultText = resultText.split('\n').map(line => line.trim()).join('\n\n'); // Add empty lines
 
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(resultText)}`;
-    window.open(whatsappUrl, '_blank');
+    const encodedText = encodeURIComponent(resultText);
+    const whatsappUrl = `https://wa.me/?text=${encodedText}`;
+
+    window.location.href = whatsappUrl;
 }
 
-// Function to convert result to PDF and share
-function convertToPdf() {
+// Function to convert result to PDF and download
+function convertToPdfAndDownload() {
     const resultDiv = document.getElementById('result');
     const resultText = resultDiv.innerText;
+
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
     doc.text(resultText, 10, 10);
     doc.save('substitution_result.pdf');
-
-    // Optionally, you can share the PDF using the Web Share API if supported
-    if (navigator.share) {
-        const pdfBlob = doc.output('blob');
-        const file = new File([pdfBlob], 'substitution_result.pdf', {
-            type: 'application/pdf',
-        });
-
-        navigator.share({
-            title: 'Substitution Result',
-            files: [file],
-        }).catch(error => console.log('Sharing failed', error));
-    }
 }
 
 // Initial load of teachers on window load
