@@ -222,21 +222,21 @@ function convertToPdf() {
                 console.log('PDF shared successfully to WhatsApp');
             }).catch((error) => {
                 console.error('Error sharing PDF:', error);
-                alert('Error sharing PDF. Please try again later.');
+                alert('Your browser does not support sharing files directly to WhatsApp.');
 
                 // If sharing fails, attempt to download the PDF
                 downloadPdf(pdfBlob);
             });
         } else {
             // Fallback for browsers that do not support Web Share API
-            alert('PDF is in The Downloads Folder');
+            alert('Your browser does not support sharing files directly to WhatsApp.');
 
             // Attempt to download the PDF
             downloadPdf(pdfBlob);
         }
     } catch (error) {
         console.error('Error generating PDF:', error);
-        alert('Error generating PDF. Please try again later.');
+        alert('PDF IS  In The Downloads Folder.');
 
         // If PDF generation fails, attempt to download the PDF
         downloadPdf(pdfBlob);
@@ -264,6 +264,8 @@ function downloadPdf(pdfBlob) {
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
 }
+
+
 
 
 
