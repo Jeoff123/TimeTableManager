@@ -170,15 +170,49 @@ function findSubstitute() {
 // Function to display substitution result
 function displayResult(selectedTeachers, selectedWeekday) {
     const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = `<h3>${selectedWeekday}</h3>`;
+    resultDiv.innerHTML = `<h2>Substitution Time Table</h2><h3>${selectedWeekday}</h3>`;
 
     const teachersData = getTeachersFromLocalStorage();
     for (let teacher in teachersData) {
         if (!selectedTeachers.includes(teacher)) {
             const p = document.createElement('p');
-            p.innerHTML = `<strong>${teacher}:</strong> ${teachersData[teacher][selectedWeekday]}`;
+            p.innerHTML = `<strong>${teacher}:</strong> ${teachersData[teacher][selectedWeekday]}<br><br>`;
             resultDiv.appendChild(p);
         }
+    }
+}
+
+// Function to share result as text via WhatsApp
+function shareAsText() {
+    const resultDiv = document.getElementById('result');
+    let resultText = resultDiv.innerText;
+    resultText = resultText.split('\n').map(line => line.trim()).join('\n\n'); // Add empty lines
+
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(resultText)}`;
+    window.open(whatsappUrl, '_blank');
+}
+
+// Function to convert result to PDF and share
+function convertToPdf() {
+    const resultDiv = document.getElementById('result');
+    const resultText = resultDiv.innerText;
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.text(resultText, 10, 10);
+    doc.save('substitution_result.pdf');
+
+    // Optionally, you can share the PDF using the Web Share API if supported
+    if (navigator.share) {
+        const pdfBlob = doc.output('blob');
+        const file = new File([pdfBlob], 'substitution_result.pdf', {
+            type: 'application/pdf',
+        });
+
+        navigator.share({
+            title: 'Substitution Result',
+            files: [file],
+        }).catch(error => console.log('Sharing failed', error));
     }
 }
 
