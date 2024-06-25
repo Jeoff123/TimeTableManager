@@ -201,19 +201,6 @@ function convertToPdf() {
 
     doc.text(resultText, 10, 10);
     doc.save('substitution_result.pdf');
-
-    // Optionally, you can share the PDF using the Web Share API if supported
-    if (navigator.share) {
-        const pdfBlob = doc.output('blob');
-        const file = new File([pdfBlob], 'substitution_result.pdf', {
-            type: 'application/pdf',
-        });
-
-        navigator.share({
-            title: 'Substitution Result',
-            files: [file],
-        }).catch(error => console.log('Sharing failed', error));
-    }
 }
 
 // Initial load of teachers on window load
