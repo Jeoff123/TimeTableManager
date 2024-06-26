@@ -90,8 +90,22 @@ function getTeachersFromLocalStorage() {
     if (!teachers) {
         teachers = {};
         localStorage.setItem('teachers', JSON.stringify(teachers));
+    } else {
+        // Normalize schedules to remove extra whitespace and convert "free" to "FREE"
+        for (let teacher in teachers) {
+            teachers[teacher].Monday = normalizeSchedule(teachers[teacher].Monday);
+            teachers[teacher].Tuesday = normalizeSchedule(teachers[teacher].Tuesday);
+            teachers[teacher].Wednesday = normalizeSchedule(teachers[teacher].Wednesday);
+            teachers[teacher].Thursday = normalizeSchedule(teachers[teacher].Thursday);
+            teachers[teacher].Friday = normalizeSchedule(teachers[teacher].Friday);
+        }
     }
     return teachers;
+}
+
+// Helper function to normalize schedule strings
+function normalizeSchedule(schedule) {
+    return schedule.trim().toUpperCase().replace(/\bFREE\b/g, 'FREE');
 }
 
 // Function to generate checkboxes for teachers in index.html
@@ -264,11 +278,6 @@ function downloadPdf(pdfBlob) {
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
 }
-
-
-
-
-
 
 // Initial load of teachers on window load
 window.onload = function() {
