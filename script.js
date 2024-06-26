@@ -42,15 +42,18 @@ function saveTeacher(event) {
         return;
     }
 
-    let teachers = getTeachersFromLocalStorage();
-
-    teachers[teacherName] = {
+    // Trim schedules before saving
+    const trimmedSchedules = {
         "Monday": mondaySchedule,
         "Tuesday": tuesdaySchedule,
         "Wednesday": wednesdaySchedule,
         "Thursday": thursdaySchedule,
         "Friday": fridaySchedule
     };
+
+    let teachers = getTeachersFromLocalStorage();
+
+    teachers[teacherName] = trimmedSchedules;
 
     saveTeachersToLocalStorage(teachers);
     loadTeachers();
@@ -132,21 +135,34 @@ function findSubstitute() {
 
     const selectedWeekday = document.getElementById('weekday').value;
 
+    let originalTeachers = {};
     const teachersData = getTeachersFromLocalStorage();
+    selectedTeachers.forEach(teacher => {
+        originalTeachers[teacher] = teachersData[teacher][selectedWeekday];
+    });
 
-    selectedTeachers.forEach(presentTeacher => {
-        // Get the absent teacher's class
-        let absentTeacherClass = null;
+    selectedTeachers.forEach(absentTeacher => {
         for (let teacher in teachersData) {
-            if (!selectedTeachers.includes(teacher)) {
-                absentTeacherClass = teachersData[teacher][selectedWeekday];
-                break;
-            }
-        }
+            if (teacher !== absentTeacher) {
+                let teacherSchedule = teachersData[teacher][selectedWeekday].split(',');
+                let absentTeacherSchedule = originalTeachers[absentTeacher].split(',');
 
-        // Add absent teacher's class to present teacher's timetable
-        if (absentTeacherClass) {
-            teachersData[presentTeacher][selectedWeekday] += `,${absentTeacherClass}`;
+                let classToReplace = null;
+                let freePeriodIndex = null;
+
+                teacherSchedule.forEach((period, index) => {
+                    if (absentTeacherSchedule[index] !== 'FREE' && period === 'FREE' && absentTeacherSchedule[index] === teachersData[teacher][selectedWeekday].split(',')[index]) {
+                        classToReplace = absentTeacherSchedule[index];
+                        freePeriodIndex = index;
+                    }
+                });
+
+                if (classToReplace !== null && freePeriodIndex !== null) {
+                    teacherSchedule[freePeriodIndex] = classToReplace;
+                }
+
+                teachersData[teacher][selectedWeekday] = teacherSchedule.join(',');
+            }
         }
     });
 
@@ -157,20 +173,22 @@ function findSubstitute() {
 // Function to display substitution result
 function displayResult(selectedTeachers, selectedWeekday) {
     const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = `<h2>Updated Time Table</h2><h3>${selectedWeekday}</h3>`;
+    resultDiv.innerHTML = `<h2>Substitution Time Table</h2><h3>${selectedWeekday}</h3>`;
 
     const teachersData = getTeachersFromLocalStorage();
-    selectedTeachers.forEach(teacher => {
-        const p = document.createElement('p');
-        p.innerHTML = `<strong>${teacher}:</strong> ${teachersData[teacher][selectedWeekday]}<br><br>`;
-        resultDiv.appendChild(p);
-    });
+    for (let teacher in teachersData) {
+        if (!selectedTeachers.includes(teacher)) {
+            const p = document.createElement('p');
+            p.innerHTML = `<strong>${teacher}:</strong> ${teachersData[teacher][selectedWeekday]}<br><br>`;
+            resultDiv.appendChild(p);
+        }
+    }
 }
 
 // Function to convert result to PDF and share via WhatsApp
 function convertToPdf() {
     const resultDiv = document.getElementById('result');
-    const resultHtml = resultDiv.innerHTML;
+    const resultText = resultDiv.innerText;
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
@@ -178,8 +196,8 @@ function convertToPdf() {
         // Set line height (line spacing) to 10 points (adjust as needed)
         const lineHeight = 5;
 
-        // Split result HTML into lines
-        const lines = doc.splitTextToSize(resultHtml, doc.internal.pageSize.width - 20);
+        // Split result text into lines
+        const lines = doc.splitTextToSize(resultText, doc.internal.pageSize.width - 20);
 
         // Add lines to PDF with specified line height
         lines.forEach((line, index) => {
@@ -221,7 +239,7 @@ function convertToPdf() {
         }
     } catch (error) {
         console.error('Error generating PDF:', error);
-        alert('Error generating PDF. Please try again.');
+        alert('PDF IS  In The Downloads Folder.');
 
         // If PDF generation fails, attempt to download the PDF
         downloadPdf(pdfBlob);
@@ -253,4 +271,5 @@ function downloadPdf(pdfBlob) {
 // Initial load of teachers on window load
 window.onload = function() {
     generateTeacherCheckboxes();
+    loadTeachers();
 };
