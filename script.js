@@ -138,47 +138,43 @@ function findSubstitute() {
         originalTeachers[teacher] = teachersData[teacher][selectedWeekday];
     });
 
+    let substituted = {};
+
     selectedTeachers.forEach(absentTeacher => {
+        let substitutionMade = false;
+
         for (let teacher in teachersData) {
             if (teacher !== absentTeacher) {
                 let teacherSchedule = teachersData[teacher][selectedWeekday].split(',');
                 let absentTeacherSchedule = originalTeachers[absentTeacher].split(',');
 
-                let classToReplace = null;
-                let freePeriodIndex = null;
-
-                teacherSchedule.forEach((period, index) => {
-                    if (absentTeacherSchedule[index] !== 'FREE' && period === 'FREE' && absentTeacherSchedule[index] === teachersData[teacher][selectedWeekday].split(',')[index]) {
-                        classToReplace = absentTeacherSchedule[index];
-                        freePeriodIndex = index;
+                absentTeacherSchedule.forEach((classToReplace, index) => {
+                    if (classToReplace !== 'FREE' && teacherSchedule[index] === 'FREE' && !substitutionMade) {
+                        teacherSchedule[index] = classToReplace;
+                        substitutionMade = true;
+                        substituted[teacher] = substituted[teacher] || [];
+                        substituted[teacher].push(`Period ${index + 1}: ${classToReplace}`);
                     }
                 });
-
-                if (classToReplace !== null && freePeriodIndex !== null) {
-                    teacherSchedule[freePeriodIndex] = classToReplace;
-                }
 
                 teachersData[teacher][selectedWeekday] = teacherSchedule.join(',');
             }
         }
     });
 
-    localStorage.setItem('teachers', JSON.stringify(teachersData));
-    displayResult(selectedTeachers, selectedWeekday);
+    saveTeachersToLocalStorage(teachersData);
+    displayResult(substituted, selectedWeekday);
 }
 
 // Function to display substitution result
-function displayResult(selectedTeachers, selectedWeekday) {
+function displayResult(substituted, selectedWeekday) {
     const resultDiv = document.getElementById('result');
     resultDiv.innerHTML = `<h2>Substitution Time Table</h2><h3>${selectedWeekday}</h3>`;
 
-    const teachersData = getTeachersFromLocalStorage();
-    for (let teacher in teachersData) {
-        if (!selectedTeachers.includes(teacher)) {
-            const p = document.createElement('p');
-            p.innerHTML = `<strong>${teacher}:</strong> ${teachersData[teacher][selectedWeekday]}<br><br>`;
-            resultDiv.appendChild(p);
-        }
+    for (let teacher in substituted) {
+        const p = document.createElement('p');
+        p.innerHTML = `<strong>${teacher}:</strong> ${substituted[teacher].join(', ')}<br><br>`;
+        resultDiv.appendChild(p);
     }
 }
 
@@ -264,11 +260,6 @@ function downloadPdf(pdfBlob) {
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
 }
-
-
-
-
-
 
 // Initial load of teachers on window load
 window.onload = function() {
