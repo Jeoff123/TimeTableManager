@@ -42,18 +42,15 @@ function saveTeacher(event) {
         return;
     }
 
-    // Trim schedules before saving
-    const trimmedSchedules = {
+    let teachers = getTeachersFromLocalStorage();
+
+    teachers[teacherName] = {
         "Monday": mondaySchedule,
         "Tuesday": tuesdaySchedule,
         "Wednesday": wednesdaySchedule,
         "Thursday": thursdaySchedule,
         "Friday": fridaySchedule
     };
-
-    let teachers = getTeachersFromLocalStorage();
-
-    teachers[teacherName] = trimmedSchedules;
 
     saveTeachersToLocalStorage(teachers);
     loadTeachers();
@@ -173,103 +170,19 @@ function findSubstitute() {
 // Function to display substitution result
 function displayResult(selectedTeachers, selectedWeekday) {
     const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = `<h2>Substitution Time Table</h2><h3>${selectedWeekday}</h3>`;
+    resultDiv.innerHTML = `<h3>${selectedWeekday}</h3>`;
 
     const teachersData = getTeachersFromLocalStorage();
     for (let teacher in teachersData) {
         if (!selectedTeachers.includes(teacher)) {
             const p = document.createElement('p');
-            p.innerHTML = `<strong>${teacher}:</strong> ${teachersData[teacher][selectedWeekday]}<br><br>`;
+            p.innerHTML = `<strong>${teacher}:</strong> ${teachersData[teacher][selectedWeekday]}`;
             resultDiv.appendChild(p);
         }
     }
 }
 
-// Function to convert result to PDF and share via WhatsApp
-function convertToPdf() {
-    const resultDiv = document.getElementById('result');
-    const resultText = resultDiv.innerText;
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    try {
-        // Set line height (line spacing) to 10 points (adjust as needed)
-        const lineHeight = 5;
-
-        // Split result text into lines
-        const lines = doc.splitTextToSize(resultText, doc.internal.pageSize.width - 20);
-
-        // Add lines to PDF with specified line height
-        lines.forEach((line, index) => {
-            // Calculate y position for each line
-            const y = 20 + (index * lineHeight);
-            // Add text to PDF at x=10, y position
-            doc.text(line, 10, y);
-        });
-
-        // Generate a Blob object representing the PDF document
-        const pdfBlob = doc.output('blob');
-
-        // Share PDF via WhatsApp if supported
-        if (navigator.share) {
-            // Create a File object from Blob
-            const file = new File([pdfBlob], 'substitution_result.pdf', {
-                type: 'application/pdf',
-            });
-
-            // Use the Web Share API to share the PDF file to WhatsApp
-            navigator.share({
-                files: [file],
-                title: 'Substitution Result PDF'
-            }).then(() => {
-                console.log('PDF shared successfully to WhatsApp');
-            }).catch((error) => {
-                console.error('Error sharing PDF:', error);
-                alert('Your browser does not support sharing files directly to WhatsApp.');
-
-                // If sharing fails, attempt to download the PDF
-                downloadPdf(pdfBlob);
-            });
-        } else {
-            // Fallback for browsers that do not support Web Share API
-            alert('Your browser does not support sharing files directly to WhatsApp.');
-
-            // Attempt to download the PDF
-            downloadPdf(pdfBlob);
-        }
-    } catch (error) {
-        console.error('Error generating PDF:', error);
-        alert('PDF IS  In The Downloads Folder.');
-
-        // If PDF generation fails, attempt to download the PDF
-        downloadPdf(pdfBlob);
-    }
-}
-
-// Function to download the generated PDF
-function downloadPdf(pdfBlob) {
-    // Create a temporary anchor element
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    document.body.appendChild(a);
-
-    // Set the HREF to a Blob URL representing the PDF
-    const url = window.URL.createObjectURL(pdfBlob);
-    a.href = url;
-
-    // Set the download attribute with a default filename
-    a.download = 'substitution_result.pdf';
-
-    // Programmatically click the anchor element to trigger download
-    a.click();
-
-    // Clean up: remove the anchor element and revoke the Blob URL
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-}
-
 // Initial load of teachers on window load
 window.onload = function() {
     generateTeacherCheckboxes();
-    loadTeachers();
 };
