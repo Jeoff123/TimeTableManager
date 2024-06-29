@@ -1,3 +1,14 @@
+// Helper function to show alerts
+function showAlert(message) {
+    alert(message);
+}
+
+// Function to validate schedule input
+function validateSchedule(schedule) {
+    const periods = schedule.split(',');
+    return periods.length === 8; // Ensure there are 8 periods
+}
+
 // Function to save teachers to localStorage
 function saveTeachersToLocalStorage(teachers) {
     localStorage.setItem('teachers', JSON.stringify(teachers));
@@ -38,7 +49,12 @@ function saveTeacher(event) {
     const fridaySchedule = document.getElementById('fridaySchedule').value.trim();
 
     if (!teacherName || !mondaySchedule || !tuesdaySchedule || !wednesdaySchedule || !thursdaySchedule || !fridaySchedule) {
-        alert('Please fill in all fields.');
+        showAlert('Please fill in all fields.');
+        return;
+    }
+
+    if (![mondaySchedule, tuesdaySchedule, wednesdaySchedule, thursdaySchedule, fridaySchedule].every(validateSchedule)) {
+        showAlert('Each schedule must have 8 periods.');
         return;
     }
 
@@ -55,6 +71,7 @@ function saveTeacher(event) {
     saveTeachersToLocalStorage(teachers);
     loadTeachers();
     document.getElementById('teacherForm').reset();
+    showAlert('Teacher saved successfully!');
 }
 
 // Function to edit a teacher's schedule
@@ -81,6 +98,7 @@ function deleteTeacher(teacherName) {
         delete teachers[teacherName];
         saveTeachersToLocalStorage(teachers);
         loadTeachers();
+        showAlert('Teacher deleted successfully!');
     }
 }
 
@@ -97,7 +115,7 @@ function getTeachersFromLocalStorage() {
 // Function to generate checkboxes for teachers in index.html
 function generateTeacherCheckboxes() {
     const teacherListDiv = document.getElementById('teacherList');
-    teacherListDiv.innerHTML = ''; // Clear previous checkboxes
+    teacherListDiv.innerHTML = '';
 
     const teachersData = getTeachersFromLocalStorage();
     for (let teacher in teachersData) {
@@ -107,7 +125,7 @@ function generateTeacherCheckboxes() {
         let checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.value = teacher;
-        checkbox.id = teacher; // Use teacher name as ID for uniqueness
+        checkbox.id = teacher;
         label.appendChild(checkbox);
 
         let labelText = document.createTextNode(teacher);
@@ -121,7 +139,7 @@ function generateTeacherCheckboxes() {
 function findSubstitute() {
     const selectedCheckboxes = document.querySelectorAll('#teacherList input[type="checkbox"]:checked');
     if (selectedCheckboxes.length === 0) {
-        alert('Please select at least one teacher.');
+        showAlert('Please select at least one teacher.');
         return;
     }
 
