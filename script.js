@@ -89,7 +89,11 @@ function editTeacher(teacherName) {
     // Remove the current teacher from localStorage
     delete teachers[teacherName];
     saveTeachersToLocalStorage(teachers);
+
+    // Scroll to the bottom of the page
+    document.getElementById('teacherForm').scrollIntoView({ behavior: 'smooth' });
 }
+
 
 // Function to delete a teacher
 function deleteTeacher(teacherName) {
