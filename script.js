@@ -1,14 +1,3 @@
-// Helper function to show alerts
-function showAlert(message) {
-    alert(message);
-}
-
-// Function to validate schedule input
-function validateSchedule(schedule) {
-    const periods = schedule.split(',');
-    return periods.length === 8; // Ensure there are 8 periods
-}
-
 // Function to save teachers to localStorage
 function saveTeachersToLocalStorage(teachers) {
     localStorage.setItem('teachers', JSON.stringify(teachers));
@@ -49,12 +38,7 @@ function saveTeacher(event) {
     const fridaySchedule = document.getElementById('fridaySchedule').value.trim();
 
     if (!teacherName || !mondaySchedule || !tuesdaySchedule || !wednesdaySchedule || !thursdaySchedule || !fridaySchedule) {
-        showAlert('Please fill in all fields.');
-        return;
-    }
-
-    if (![mondaySchedule, tuesdaySchedule, wednesdaySchedule, thursdaySchedule, fridaySchedule].every(validateSchedule)) {
-        showAlert('Each schedule must have 8 periods.');
+        alert('Please fill in all fields.');
         return;
     }
 
@@ -71,7 +55,6 @@ function saveTeacher(event) {
     saveTeachersToLocalStorage(teachers);
     loadTeachers();
     document.getElementById('teacherForm').reset();
-    showAlert('Teacher saved successfully!');
 }
 
 // Function to edit a teacher's schedule
@@ -89,11 +72,7 @@ function editTeacher(teacherName) {
     // Remove the current teacher from localStorage
     delete teachers[teacherName];
     saveTeachersToLocalStorage(teachers);
-
-    // Scroll to the bottom of the page
-    document.getElementById('teacherForm').scrollIntoView({ behavior: 'smooth' });
 }
-
 
 // Function to delete a teacher
 function deleteTeacher(teacherName) {
@@ -102,7 +81,6 @@ function deleteTeacher(teacherName) {
         delete teachers[teacherName];
         saveTeachersToLocalStorage(teachers);
         loadTeachers();
-        showAlert('Teacher deleted successfully!');
     }
 }
 
@@ -119,7 +97,7 @@ function getTeachersFromLocalStorage() {
 // Function to generate checkboxes for teachers in index.html
 function generateTeacherCheckboxes() {
     const teacherListDiv = document.getElementById('teacherList');
-    teacherListDiv.innerHTML = '';
+    teacherListDiv.innerHTML = ''; // Clear previous checkboxes
 
     const teachersData = getTeachersFromLocalStorage();
     for (let teacher in teachersData) {
@@ -129,7 +107,7 @@ function generateTeacherCheckboxes() {
         let checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.value = teacher;
-        checkbox.id = teacher;
+        checkbox.id = teacher; // Use teacher name as ID for uniqueness
         label.appendChild(checkbox);
 
         let labelText = document.createTextNode(teacher);
@@ -139,6 +117,7 @@ function generateTeacherCheckboxes() {
     }
 }
 
+// Function to find substitute based on selected teachers and weekday
 function findSubstitute() {
     const selectedCheckboxes = document.querySelectorAll('#teacherList input[type="checkbox"]:checked');
     if (selectedCheckboxes.length === 0) {
@@ -155,36 +134,38 @@ function findSubstitute() {
 
     let originalTeachers = {};
     const teachersData = getTeachersFromLocalStorage();
+    selectedTeachers.forEach(teacher => {
+        originalTeachers[teacher] = teachersData[teacher][selectedWeekday];
+    });
 
-    // Check for duplicates
-    let duplicateAlert = false;
-    for (let teacher1 of selectedTeachers) {
-        for (let teacher2 of selectedTeachers) {
-            if (teacher1 !== teacher2 && teachersData[teacher1][selectedWeekday] === teachersData[teacher2][selectedWeekday]) {
-                alert(`Warning: ${teacher1} and ${teacher2} have the same class scheduled at the same time on ${selectedWeekday}.`);
-                duplicateAlert = true;
+    selectedTeachers.forEach(absentTeacher => {
+        for (let teacher in teachersData) {
+            if (teacher !== absentTeacher) {
+                let teacherSchedule = teachersData[teacher][selectedWeekday].split(',');
+                let absentTeacherSchedule = originalTeachers[absentTeacher].split(',');
+
+                let classToReplace = null;
+                let freePeriodIndex = null;
+
+                teacherSchedule.forEach((period, index) => {
+                    if (absentTeacherSchedule[index] !== 'FREE' && period === 'FREE' && absentTeacherSchedule[index] === teachersData[teacher][selectedWeekday].split(',')[index]) {
+                        classToReplace = absentTeacherSchedule[index];
+                        freePeriodIndex = index;
+                    }
+                });
+
+                if (classToReplace !== null && freePeriodIndex !== null) {
+                    teacherSchedule[freePeriodIndex] = classToReplace;
+                }
+
+                teachersData[teacher][selectedWeekday] = teacherSchedule.join(',');
             }
         }
-        if (duplicateAlert) {
-            break;
-        }
-    }
-
-    if (duplicateAlert) {
-        return; // Exit function if duplicates were found
-    }
-
-    // Proceed with substitution logic
-    let originalTeachers = {};
-    selectedTeachers.forEach(absentTeacher => {
-        // Your existing substitution logic here
-        // This part is where you find and apply substitutes as per your original implementation
     });
 
     localStorage.setItem('teachers', JSON.stringify(teachersData));
     displayResult(selectedTeachers, selectedWeekday);
 }
-
 
 // Function to display substitution result
 function displayResult(selectedTeachers, selectedWeekday) {
